@@ -1,40 +1,53 @@
 
 function [varargout] = EKFpara_Localization(varargin)
-
+    clear global; close all; clc;
     global delt iterator alpha_noise SigmaQ;
     if nargin == 0
-
-        clear; close all; clc;
-        
         start_time = 0;
         end_time = 60;
         time = 0;
         delt = 0.1;
         iterator = ceil((end_time - start_time)/delt);
         
-        robot = linearAngular(1, [0, 0, 0], [0, 0], eye(3));
+        robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3));
 
         alpha_noise = robot.controlParameter;
         SigmaQ = robot.sensorNoise; % Sensor noise
-
+        
         mu_init = robot.groundTruth;
-        Sigma_init = robot.sigmaEKF;
+        Sigma_init = robot.sigmaEKF{1};
         
         mut_1 = mu_init;
+        ground_1 = mu_init;
+        DR_1 = mu_init;
         Sigmat_1 = Sigma_init;
 
         m = [1, 2, 1; 2, 2, 2; 3, 3, 3];
         
         for i = 1 : iterator          
             time = time + i * delt; 
-            ut = doControl(time);      
-            ground = CalGround(mut_1, ut, delt);
+            ut = doControl(time);    
+            robot.odometry(:, i + 1) = ut;
+            ground = CalGround(ground_1, ut, delt);
             zt = CalObservation(ground, m);
-            [robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i}] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, delt);
-            robot.estimatorDR(:, i + 1) = DeadReckoning(mut_1, ut, delt);
+            
+            robot.estimatorDR(:, i + 1) = DeadReckoning(DR_1, ut, delt);
+            robot.groundTruth(:, i + 1) = ground;
+            [robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, delt);
+            
+            DR_1 = robot.estimatorDR(:, i + 1);
+            ground_1 = ground;
+            mut_1 = robot.estimatorEKF(:, i + 1);
+            Sigmat_1 = robot.sigmaEKF{i + 1};
         end
         
-
+        draw_process(robot);
+        
+        
+        
+        
+        
+        
     elseif nargin == 5 && nargout == 2
 
 
@@ -46,7 +59,7 @@ end
 % function of ekf localization
 function [mut, sigmat] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, sampletime)
 
-global alpha_noise;
+global alpha_noise SigmaQ;
 
 theta = mut_1(3);
 vt = ut(1);
@@ -72,8 +85,9 @@ if omegat ~= 0
     mu_t = mut_1 + [(-vt/omegat*sin(theta) + vt/omegat*sin(theta + omegat*deltat));
                      vt/omegat*cos(theta) - vt/omegat*cos(theta + omegat*deltat);
                      wrapToPi(omegat*deltat)];
-
-    Sigma_t = Gt*Sigmat_1*Gt' + Vt*Mt*Vt';
+    
+    mu_t(3) = wrapToPi(mu_t(3));
+    Sigma_t = Gt * Sigmat_1* Gt' + Vt * Mt * Vt';
 
 elseif omegat == 0
     Gt = [1, 0, -deltat*vt*sin(theta);
@@ -102,14 +116,16 @@ if ~isempty(zt)
                      atan2(my(N) - mu_t(2), mx(N) - mu_t(1)) - mu_t(3)];
         zt_Lambda(2) = wrapToPi(zt_Lambda(2));
         
-        Ht=[-(mx(N)-mu_t(1))/sqrt(q),-(my(N)-mu_t(2))/sqrt(q),0;
-            (my(N)-mu_t(2))/q,-(mx(N)-mu_t(1))/q,-1];
+        Ht=[-(mx(N)-mu_t(1))/sqrt(q), -(my(N)-mu_t(2))/sqrt(q), 0;
+            (my(N)-mu_t(2))/q, -(mx(N)-mu_t(1))/q, -1];
 %       Hm=[(mx(N)-mu_t(1))/sqrt(q),(my(N)-mu_t(2))/sqrt(q),0;-(my(N)-mu_t(2))/q,(mx(N)-mu_t(1))/q,0];
         St = Ht*Sigma_t*(Ht)' + SigmaQ;
         %St=Ht*Sigma_t*(Ht)'+Qt+Hm*Sigma_m(:, 1+(N-1)*3 :3+(N-1)*3)*(Hm)';
         Kt = Sigma_t*(Ht)'*inv(St);
-        mu_t = mu_t + Kt*(z_t(n,1:2)' - zt_Lambda);
-        Sigma_t = (I - Kt*Ht)*Sigma_t;
+        mu_t = mu_t + Kt*(zt(n,1:2)' - zt_Lambda);
+        mu_t(3) = wrapToPi(mu_t(3));
+        Sigma_t = (eye(3) - Kt*Ht)*Sigma_t;
+%         disp(zt(n,1:2)' - zt_Lambda);
     end
 end
 
@@ -131,13 +147,17 @@ u =[ V*(1-exp(-time/T)) ToRadian(omega)*(1-exp(-time/T))]';
 end
 
 function zt = CalObservation(ground, object)
-     q = (ground(1) - object(:, 1)).^2 + (ground(2) - object(:, 1)).^2;
-     zt = [sqrt(q), atan2(ground(2) - object(:, 2), ground(1) - object(:, 1)) - ground(3), object(:, 3)];
+     global SigmaQ;
+     n = numel(object(:,1));
+     q = (ground(1) - object(:, 1)).^2 + (ground(2) - object(:, 2)).^2;
+     zt = [sqrt(q), wrapToPi(atan2(object(:, 2) - ground(2), object(:, 1) - ground(1)) - ground(3)), object(:, 3)] + [rand(3, 2) .* SigmaQ, zeros(n, 1)] ;
+     
 end
 
 function groundTruth = CalGround(mut_pre, ut, sampletime)
-    vt = ut(1);
-    omegat = ut(2);
+    global alpha_noise;
+    vt = ut(1) + (alpha_noise(1)*ut(1)^2 + alpha_noise(2)*ut(2)^2) * rand(1);
+    omegat = ut(2) + (alpha_noise(3)*ut(1)^2 + alpha_noise(4)*ut(2)^2) * rand(1);
     theta = wrapToPi(mut_pre(3));
       
     if omegat~=0

@@ -5,8 +5,8 @@ classdef linearAngular < handle
         estimatorEKF = [];      % estimator of the robot
         estimatorDR = [];
         observation = {};
-        controlParameter = [0.01, 0.001, 0.001, 0.01]; % control noise parameter
-        sensorNoise = [0.001, 0.001];      % noise of the sensor
+        controlParameter = [0.1, 0.01, 0.01, 0.1]; % control noise parameter
+        sensorNoise = [0.1, 0.1];      % noise of the sensor
         sigmaEKF = {};
         ID = 0;
     end
@@ -16,7 +16,7 @@ classdef linearAngular < handle
             % DIFFERENTIALDRIVE Construct an instance of this class
             obj.ID = id;
             obj.groundTruth(:, 1) = initialGround;      
-            obj.odometry = initialOdometry;
+            obj.odometry(:, 1) = initialOdometry;
             obj.estimatorEKF(:, 1) = initialGround;
             obj.estimatorDR(:, 1) = initialGround;
             obj.sigmaEKF{1} = initialSigma; %0.001*eye(3);
