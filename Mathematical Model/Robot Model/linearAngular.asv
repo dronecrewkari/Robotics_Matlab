@@ -12,15 +12,13 @@ classdef linearAngular < handle
     end
     
     methods  
-        function obj = linearAngular(id, initialGround, initialOdometry, initialSigma, controlNoise, sensorNoise)
+        function obj = linearAngular(id, initialGround, initialOdometry, initialSigma, controlNoise,)
             % DIFFERENTIALDRIVE Construct an instance of this class
             obj.groundTruth = initialGround;      
             obj.odometry = initialOdometry;
             obj.estimatorEKF = initialGround;
             obj.estimatorDR = initialGround;
-            obj.sigmaEKF = initialSigma; %0.001*eye(3);
-            obj.controlNoise = sensorNoise;
-            obj.sensorNoise = controlNoise;
+            obj.sigma = initialSigma;%0.001*eye(3);
             obj.ID = id;
         end
     end    
