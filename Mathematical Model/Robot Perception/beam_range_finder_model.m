@@ -21,7 +21,7 @@ end
 %% local measurement noise ¡ª¡ªnormal distribution p_hit
 function [p_hit]=p_hit(z_tk,z_tk_star,sigma_hit,z_max)
 if z_tk>=0 && z_tk<=z_max
-    b=@(z_tk)normpdf(z_tk,z_tk_star,sigma_hit^2);
+    b = @(z_tk)normpdf(z_tk,z_tk_star,sigma_hit^2);
     a=1/integral(b,0,z_max);
     p_hit=a*normpdf(z_tk,z_tk_star,sigma_hit^2);
 else
