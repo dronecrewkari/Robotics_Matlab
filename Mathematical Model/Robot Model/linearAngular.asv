@@ -6,24 +6,22 @@ classdef linearAngular < handle
         estimatorDR = [];
         observation = {};
         controlParameter = [0.01, 0.001, 0.001, 0.01]; % control noise parameter
-        sensorNoise = [0.001, 0.001];      % noise of the sensor
-        sigmaEKF = {};
+        sensorNoise = [0.0001, 0.0001];      % noise of the sensor
+        sigmaEKF = [];
         ID = 0;
     end
     
     methods  
         function obj = linearAngular(id, initialGround, initialOdometry, initialSigma, varargin)
             % DIFFERENTIALDRIVE Construct an instance of this class
-            obj.ID = id;
-            obj.groundTruth(:, 1) = initialGround;      
+            obj.groundTruth = initialGround;      
             obj.odometry = initialOdometry;
-            obj.estimatorEKF(:, 1) = initialGround;
-            obj.estimatorDR(:, 1) = initialGround;
-            obj.sigmaEKF{1} = initialSigma; %0.001*eye(3);
-            if (nargin == 6)
-                obj.controlParameter = varargin(1);
-                obj.sensorNoise = varargin(2);
-            end
+            obj.estimatorEKF = initialGround;
+            obj.estimatorDR = initialGround;
+            obj.sigmaEKF = initialSigma; %0.001*eye(3);
+            obj.controlParameter = varagin(1);
+            obj.sensorNoise = varagin(2);
+            obj.ID = id;
         end
     end    
 end
