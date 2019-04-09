@@ -12,7 +12,7 @@ function [varargout] = EKFpara_Localization(varargin)
         robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3));
 
         alpha_noise = robot.controlParameter;
-        SigmaQ = robot.sensorNoise; % Sensor noise
+        SigmaQ = robot.sensorNoise    ; % Sensor noise
         
         mu_init = robot.groundTruth;
         Sigma_init = robot.sigmaEKF{1};
@@ -22,7 +22,7 @@ function [varargout] = EKFpara_Localization(varargin)
         DR_1 = mu_init;
         Sigmat_1 = Sigma_init;
 
-        m = [1, 2, 1; 2, 2, 2; 3, 3, 3];
+        m = [1, 2.5, 1];
         
         for i = 1 : iterator          
             time = time + i * delt; 
@@ -108,18 +108,16 @@ end
 if ~isempty(zt)
     
     zn = numel(zt(:,1));   % number of the objects which is observated by the camera
-    
+    Qt = diag([SigmaQ(1)^2, SigmaQ(2)^2]);
     for n = 1:zn     
         N = zt(n,3);  % id of the observed object      
         q = (mx(N) - mu_t(1))^2 + (my(N) - mu_t(2))^2;
-        zt_Lambda = [sqrt(q);
-                     atan2(my(N) - mu_t(2), mx(N) - mu_t(1)) - mu_t(3)];
+        zt_Lambda = [sqrt(q); atan2(my(N) - mu_t(2), mx(N) - mu_t(1)) - mu_t(3)];
         zt_Lambda(2) = wrapToPi(zt_Lambda(2));
         
-        Ht=[-(mx(N)-mu_t(1))/sqrt(q), -(my(N)-mu_t(2))/sqrt(q), 0;
-            (my(N)-mu_t(2))/q, -(mx(N)-mu_t(1))/q, -1];
+        Ht=[-(mx(N)-mu_t(1))/sqrt(q), -(my(N)-mu_t(2))/sqrt(q), 0;(my(N)-mu_t(2))/q, -(mx(N)-mu_t(1))/q, -1];
 %       Hm=[(mx(N)-mu_t(1))/sqrt(q),(my(N)-mu_t(2))/sqrt(q),0;-(my(N)-mu_t(2))/q,(mx(N)-mu_t(1))/q,0];
-        St = Ht*Sigma_t*(Ht)' + SigmaQ;
+        St = Ht*Sigma_t*(Ht)' + Qt;
         %St=Ht*Sigma_t*(Ht)'+Qt+Hm*Sigma_m(:, 1+(N-1)*3 :3+(N-1)*3)*(Hm)';
         Kt = Sigma_t*(Ht)'*inv(St);
         mu_t = mu_t + Kt*(zt(n,1:2)' - zt_Lambda);
@@ -150,7 +148,7 @@ function zt = CalObservation(ground, object)
      global SigmaQ;
      n = numel(object(:,1));
      q = (ground(1) - object(:, 1)).^2 + (ground(2) - object(:, 2)).^2;
-     zt = [sqrt(q), wrapToPi(atan2(object(:, 2) - ground(2), object(:, 1) - ground(1)) - ground(3)), object(:, 3)] + [rand(3, 2) .* SigmaQ, zeros(n, 1)] ;
+     zt = [sqrt(q), wrapToPi(atan2(object(:, 2) - ground(2), object(:, 1) - ground(1)) - ground(3)), object(:, 3)] + [rand(n, 2) .* SigmaQ, zeros(n, 1)] ;
      
 end
 
