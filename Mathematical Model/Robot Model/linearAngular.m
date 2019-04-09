@@ -6,7 +6,7 @@ classdef linearAngular < handle
         estimatorDR = [];
         observation = {};
         controlParameter = [0.1, 0.01, 0.01, 0.1]; % control noise parameter
-        sensorNoise = [0.1, 0.1];      % noise of the sensor
+        sensorNoise = [0.01, 0.01];      % noise of the sensor
         sigmaEKF = {};
         ID = 0;
     end

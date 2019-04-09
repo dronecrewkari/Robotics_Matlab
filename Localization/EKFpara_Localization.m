@@ -22,7 +22,7 @@ function [varargout] = EKFpara_Localization(varargin)
         DR_1 = mu_init;
         Sigmat_1 = Sigma_init;
 
-        m = [1, 2.5, 1];
+        m = [1, 2.5, 1; 2.5, 3, 2; 3.4, 4, 3];
         
         for i = 1 : iterator          
             time = time + i * delt; 
@@ -41,7 +41,7 @@ function [varargout] = EKFpara_Localization(varargin)
             Sigmat_1 = robot.sigmaEKF{i + 1};
         end
         
-        draw_process(robot);
+        DrawGraph(robot);
         
         
         
