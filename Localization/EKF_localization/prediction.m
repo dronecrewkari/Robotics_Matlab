@@ -8,10 +8,10 @@ omegat = robot.odometry(2, iterator);
 Sigmat_1 = robot.sigma{iterator - 1};
 estimator_1 = robot.estimatorEKF(1:3, iterator-1);
 
-alpha_1=robot.controlNoise(1);
-alpha_2=robot.controlNoise(2);
-alpha_3=robot.controlNoise(3);
-alpha_4=robot.controlNoise(4);
+alpha_1 = robot.controlNoise(1);
+alpha_2 = robot.controlNoise(2);
+alpha_3 = robot.controlNoise(3);
+alpha_4 = robot.controlNoise(4);
 
 if omegat==0
     omegat=0.001*randn(1);

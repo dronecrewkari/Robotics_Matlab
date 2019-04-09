@@ -1,4 +1,4 @@
-function [p]=velocity_model(xt,ut,xt_1,Delta_t,alpha,distribution)
+function [p] = velocity_model(xt,ut,xt_1,Delta_t,alpha,distribution)
 %% algorithm motion_model_veloctiy
 
 

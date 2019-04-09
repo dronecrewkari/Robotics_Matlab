@@ -1,6 +1,6 @@
-% -------------------------------------------------------------------------
+%-------------------------------------------------------------------------
 %
-% File : EKFpara_Localization.m
+% File : EKF_Localization_demo.m
 %
 % Discription : Mobible robot localization sample code with
 % Extended Kalman Filter (EKF)
@@ -68,9 +68,6 @@ function [varargout] = EKF_Localization_demo(varargin)
 
     end
 end
-
-
-
 
 
 
