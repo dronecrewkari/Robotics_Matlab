@@ -24,7 +24,7 @@ function [varargout] = EKF_Localization_demo(varargin)
         interval = 5; %sample interval
         
         % setting of the parameter of the robot
-        robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3)); %robot model
+        robot = linearAngular(1, [0, 0, 0], [0; 0], eye(3)); %robot model
         alpha_noise = robot.controlParameter; %control noise parameter
         SigmaQ = robot.sensorNoise; % Sensor noise
             
@@ -37,9 +37,12 @@ function [varargout] = EKF_Localization_demo(varargin)
         
         % calculation and plot
         tic;
-        for i = 1 : iterator          
+        
+        
+        for i = 1 : iterator    
+            plot(m(1, :), m(2, :), 'kh', 'MarkerSize', 7);
             time = time + i * delt; 
-            ut = calOdom(time);    
+            ut = calOdom(1, 5, time);    
             robot.odometry(:, i + 1) = ut;
             ground = calGround(ground_1, ut, alpha_noise, delt);
             zt = calObservation(ground, m, SigmaQ);
@@ -47,11 +50,12 @@ function [varargout] = EKF_Localization_demo(varargin)
             robot.estimatorDR(:, i + 1) = DeadReckoning(DR_1, ut, delt);
             robot.groundTruth(:, i + 1) = ground;
             [robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, alpha_noise, SigmaQ, delt);
-            
+                      
             DR_1 = robot.estimatorDR(:, i + 1);
             ground_1 = ground;
             mut_1 = robot.estimatorEKF(:, i + 1);
             Sigmat_1 = robot.sigmaEKF{i + 1};
+            
             figure(1);
             set(gcf,'outerposition',get(0,'screensize'));
             t = 1 : interval : i+1;
@@ -64,12 +68,41 @@ function [varargout] = EKF_Localization_demo(varargin)
                drawnow;    
             end
         end
-        toc;     
+             
         drawGraphTemplate(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR, 'Ground Truth','EKF Estimator','Dead Reckoning Estimator');
-        
+        drawRMSE(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR, 'RMSE of EKF Estimator','RMSE of Dead Reckoning Estimator');
+        toc;
     elseif nargin == 5 && nargout == 2
 
     end
+end
+
+function [] = drawRMSE(groundTruth, targetEstimator, compareEstimator, nameTarget, nameCompare)
+
+n = numel(groundTruth(1, :));
+figure;
+sum = 0;
+sum2 = 0;
+rmseTarget(1) = 0;
+rmseCompare(1) = 0;
+for t = 1:n   
+    actual = sqrt(groundTruth(1, t)^2 + groundTruth(2, t)^2);
+    estimateTarget = sqrt(targetEstimator(1, t)^2 + targetEstimator(2, t)^2);
+    estimateCompare = sqrt(compareEstimator(1, t)^2 + compareEstimator(2, t)^2);
+    
+    sum = sum + (actual - estimateTarget)^2;  
+    sum2 = sum2 + (actual - estimateCompare)^2;
+
+    rmseTarget(t) = sqrt(sum / t);
+    rmseCompare(t) = sqrt(sum2 / t);
+    plot(1:t, rmseTarget(:), 'r', 1:t, rmseCompare(:), 'b', 'linewidth', 2); hold on;
+end
+leg = legend(nameTarget, nameCompare);
+% set(gca,'FontSize',15,'FontName','Times New Roman');
+set(leg,'FontSize',15,'location','NorthWest','FontName','Times New Roman');
+xlabel('RMSE of x position (unit:m)', 'FontSize',20,'FontName','Times New Roman');
+ylabel('RMSE of y position (unit:m)', 'FontSize',20,'FontName','Times New Roman');
+
 end
 
 
