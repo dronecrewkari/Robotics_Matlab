@@ -35,10 +35,12 @@ function [varargout] = EKF_Localization_demo(varargin)
 
         m = [1, 2.5, 1; 2.5, 3, 2; 3.4, 4, 3];  % object matrix 
         
+    elseif nargin == 5 && nargout == 2
+
+    end
+        
         % calculation and plot
         tic;
-        
-        
         for i = 1 : iterator    
             plot(m(1, :), m(2, :), 'kh', 'MarkerSize', 7);
             time = time + i * delt; 
@@ -71,39 +73,9 @@ function [varargout] = EKF_Localization_demo(varargin)
              
         drawGraphTemplate(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR, 'Ground Truth','EKF Estimator','Dead Reckoning Estimator');
         drawRMSE(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR, 'RMSE of EKF Estimator','RMSE of Dead Reckoning Estimator');
-        toc;
-    elseif nargin == 5 && nargout == 2
-
-    end
 end
 
-function [] = drawRMSE(groundTruth, targetEstimator, compareEstimator, nameTarget, nameCompare)
 
-n = numel(groundTruth(1, :));
-figure;
-sum = 0;
-sum2 = 0;
-rmseTarget(1) = 0;
-rmseCompare(1) = 0;
-for t = 1:n   
-    actual = sqrt(groundTruth(1, t)^2 + groundTruth(2, t)^2);
-    estimateTarget = sqrt(targetEstimator(1, t)^2 + targetEstimator(2, t)^2);
-    estimateCompare = sqrt(compareEstimator(1, t)^2 + compareEstimator(2, t)^2);
-    
-    sum = sum + (actual - estimateTarget)^2;  
-    sum2 = sum2 + (actual - estimateCompare)^2;
-
-    rmseTarget(t) = sqrt(sum / t);
-    rmseCompare(t) = sqrt(sum2 / t);
-    plot(1:t, rmseTarget(:), 'r', 1:t, rmseCompare(:), 'b', 'linewidth', 2); hold on;
-end
-leg = legend(nameTarget, nameCompare);
-% set(gca,'FontSize',15,'FontName','Times New Roman');
-set(leg,'FontSize',15,'location','NorthWest','FontName','Times New Roman');
-xlabel('RMSE of x position (unit:m)', 'FontSize',20,'FontName','Times New Roman');
-ylabel('RMSE of y position (unit:m)', 'FontSize',20,'FontName','Times New Roman');
-
-end
 
 
 
