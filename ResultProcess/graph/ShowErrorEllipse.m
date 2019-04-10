@@ -27,5 +27,5 @@ end
 R=[cos(angle) sin(angle);
    -sin(angle) cos(angle)];
 x = scale * R * x;
-plot(x(1,:) + estimator(1), x(2,:) + estimator(2))
+plot(x(1,:) + estimator(1), x(2,:) + estimator(2), '-black')
 end

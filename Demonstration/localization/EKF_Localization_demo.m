@@ -14,7 +14,7 @@ function [varargout] = EKF_Localization_demo(varargin)
     clear global; close all; clc;
     global delt iterator;
     if nargin == 0
-        
+        disp('Extended Kalman Filter (EKF) localization demonstration start!!')
         start_time = 0;
         end_time = 60;
         time = 0;
@@ -52,17 +52,17 @@ function [varargout] = EKF_Localization_demo(varargin)
             mut_1 = robot.estimatorEKF(:, i + 1);
             Sigmat_1 = robot.sigmaEKF{i + 1};
             
-            if rem(i,3)==0
-               plot(robot.groundTruth(1,:), robot.groundTruth(2,:), '.g'); hold on;
-               plot(robot.estimatorEKF(1,:), robot.estimatorEKF(2,:), '.r'); hold on;
-               plot(robot.estimatorDR(1,:), robot.estimatorDR(2,:), '.b'); hold on;
+            if rem(i,5)==0
+               plot(robot.groundTruth(1,:), robot.groundTruth(2,:), '-g', 'linewidth', 2); hold on;
+               plot(robot.estimatorEKF(1,:), robot.estimatorEKF(2,:), 'xr', 'linewidth', 2); hold on;
+               plot(robot.estimatorDR(1,:), robot.estimatorDR(2,:), '--b', 'linewidth', 2); hold on;
                axis equal;
                ShowErrorEllipse(robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}, 2.5);
                drawnow;    
             end
         end
               
-%         drawGraph(robot);
+        drawGraphTemplate(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR);
         
     elseif nargin == 5 && nargout == 2
 
