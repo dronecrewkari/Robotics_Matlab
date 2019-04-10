@@ -1,11 +1,11 @@
-function u = calOdom(time)
+function u = calOdom(vt, omegat, time)
 %Calc Input Parameter
 
 T = 10; % [sec]
  
 % [V yawrate]
-V = 1.0; % [m/s]
-omega = 5; % [deg/s]
+V = vt; % [m/s]
+omega = omegat; % [deg/s]
  
 u =[ V*(1-exp(-time/T)) ToRadian(omega)*(1-exp(-time/T))]';
 end
