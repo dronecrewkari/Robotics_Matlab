@@ -1,4 +1,4 @@
-function rmse = RMSE(actualX,actualY,estimateX,estimateY,n)
+function rmse = RMSE(actualX, actualY, estimateX, estimateY,n)
 b=0;
 for a=1:n
     actual = sqrt(actualX(a)^2 + actualY(a)^2);
