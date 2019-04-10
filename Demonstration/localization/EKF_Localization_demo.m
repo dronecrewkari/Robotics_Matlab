@@ -51,18 +51,19 @@ function [varargout] = EKF_Localization_demo(varargin)
             ground_1 = ground;
             mut_1 = robot.estimatorEKF(:, i + 1);
             Sigmat_1 = robot.sigmaEKF{i + 1};
-            
-            if rem(i,5)==0
-               plot(robot.groundTruth(1,:), robot.groundTruth(2,:), '-g', 'linewidth', 2); hold on;
-               plot(robot.estimatorEKF(1,:), robot.estimatorEKF(2,:), 'xr', 'linewidth', 2); hold on;
-               plot(robot.estimatorDR(1,:), robot.estimatorDR(2,:), '--b', 'linewidth', 2); hold on;
+            figure(1);
+            set(gcf,'outerposition',get(0,'screensize'));
+            if rem(i,3)==0
+               plot(robot.groundTruth(1,1:3:end), robot.groundTruth(2,1:3:end), '-g', 'linewidth', 2); hold on;
+               plot(robot.estimatorEKF(1,1:3:end), robot.estimatorEKF(2,1:3:end), 'xr', 'linewidth', 2); hold on;
+               plot(robot.estimatorDR(1,1:3:end), robot.estimatorDR(2,1:3:end), '--b', 'linewidth', 2); hold on;
                axis equal;
                ShowErrorEllipse(robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}, 2.5);
                drawnow;    
             end
         end
               
-        drawGraphTemplate(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR);
+        drawGraphTemplate(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR, 'Ground Truth','EKF Estimator','Dead Reckoning Estimator');
         
     elseif nargin == 5 && nargout == 2
 
