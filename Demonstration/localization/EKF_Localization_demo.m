@@ -14,28 +14,29 @@ function [varargout] = EKF_Localization_demo(varargin)
     clear global; close all; clc;
     global delt iterator;
     if nargin == 0
-        disp('Extended Kalman Filter (EKF) localization demonstration start!!')
+        disp('Extended Kalman Filter (EKF) localization demonstration start!!');
+        % setup of the simulation
         start_time = 0;
         end_time = 60;
         time = 0;
-        delt = 0.1;
+        delt = 0.1;   %sampletime
         iterator = ceil((end_time - start_time)/delt);
+        interval = 5; %sample interval
         
-        robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3));
-
-        alpha_noise = robot.controlParameter;
+        % setting of the parameter of the robot
+        robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3)); %robot model
+        alpha_noise = robot.controlParameter; %control noise parameter
         SigmaQ = robot.sensorNoise; % Sensor noise
-        
-        mu_init = robot.groundTruth;
-        Sigma_init = robot.sigmaEKF{1};
-        
-        mut_1 = mu_init;
-        ground_1 = mu_init;
-        DR_1 = mu_init;
-        Sigmat_1 = Sigma_init;
+            
+        mut_1 = robot.groundTruth(:, 1);
+        ground_1 = robot.groundTruth(:, 1);
+        DR_1 = robot.groundTruth(:, 1);
+        Sigmat_1 = robot.sigmaEKF{1};
 
-        m = [1, 2.5, 1; 2.5, 3, 2; 3.4, 4, 3];
+        m = [1, 2.5, 1; 2.5, 3, 2; 3.4, 4, 3];  % object matrix 
         
+        % calculation and plot
+        tic;
         for i = 1 : iterator          
             time = time + i * delt; 
             ut = calOdom(time);    
@@ -53,16 +54,17 @@ function [varargout] = EKF_Localization_demo(varargin)
             Sigmat_1 = robot.sigmaEKF{i + 1};
             figure(1);
             set(gcf,'outerposition',get(0,'screensize'));
-            if rem(i,3)==0
-               plot(robot.groundTruth(1,1:3:end), robot.groundTruth(2,1:3:end), '-g', 'linewidth', 2); hold on;
-               plot(robot.estimatorEKF(1,1:3:end), robot.estimatorEKF(2,1:3:end), 'xr', 'linewidth', 2); hold on;
-               plot(robot.estimatorDR(1,1:3:end), robot.estimatorDR(2,1:3:end), '--b', 'linewidth', 2); hold on;
+            t = 1 : interval : i+1;
+            if rem(i, interval)==0
+               plot(robot.groundTruth(1, t), robot.groundTruth(2, t), '-g', 'linewidth', 2); hold on;
+               plot(robot.estimatorEKF(1, t), robot.estimatorEKF(2, t), 'xr', 'linewidth', 2); hold on;
+               plot(robot.estimatorDR(1, t), robot.estimatorDR(2, t), '--b', 'linewidth', 2); hold on;
                axis equal;
                ShowErrorEllipse(robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}, 2.5);
                drawnow;    
             end
         end
-              
+        toc;     
         drawGraphTemplate(robot.groundTruth, robot.estimatorEKF, robot.estimatorDR, 'Ground Truth','EKF Estimator','Dead Reckoning Estimator');
         
     elseif nargin == 5 && nargout == 2
