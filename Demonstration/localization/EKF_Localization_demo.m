@@ -26,7 +26,7 @@ function [varargout] = EKF_Localization_demo(varargin)
         % setting of the parameter of the robot
         robot = linearAngular(1, [0, 0, 0], [0; 0], eye(3)); %robot model
         alpha_noise = robot.controlParameter; %control noise parameter
-        SigmaQ = robot.sensorNoise; % Sensor noise
+        SigmaQ_eigenvalue = robot.sensorNoise; % Sensor noise
             
         mut_1 = robot.groundTruth(:, 1);
         ground_1 = robot.groundTruth(:, 1);
@@ -47,11 +47,11 @@ function [varargout] = EKF_Localization_demo(varargin)
             ut = calOdom(1, 5, time);    
             robot.odometry(:, i + 1) = ut;
             ground = calGround(ground_1, ut, alpha_noise, delt);
-            zt = calObservation(ground, m, SigmaQ);
+            zt = calObservation(ground, m, SigmaQ_eigenvalue);
             
             robot.estimatorDR(:, i + 1) = DeadReckoning(DR_1, ut, delt);
             robot.groundTruth(:, i + 1) = ground;
-            [robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, alpha_noise, SigmaQ, delt);
+            [robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
                       
             DR_1 = robot.estimatorDR(:, i + 1);
             ground_1 = ground;
@@ -66,7 +66,7 @@ function [varargout] = EKF_Localization_demo(varargin)
                plot(robot.estimatorEKF(1, t), robot.estimatorEKF(2, t), 'xr', 'linewidth', 2); hold on;
                plot(robot.estimatorDR(1, t), robot.estimatorDR(2, t), '--b', 'linewidth', 2); hold on;
                axis equal;
-               ShowErrorEllipse(robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}, 2.5);
+               ShowErrorEllipse(robot.estimatorEKF(:, i + 1), robot.sigmaEKF{i + 1}, 1);
                drawnow;    
             end
         end
