@@ -5,7 +5,7 @@ classdef linearAngular < handle
         estimatorEKF = [];      % estimator of the state by EKF
         estimatorDR = [];       % estimator of the state by dead reckoning
         observation = {};       % observation from sensor
-        controlParameter = [0.6, 0.1, 0.1, 0.6];  % control noise parameter alpha
+        controlParameter = [0.3, 0.1, 0.1, 0.3];  % control noise parameter alpha
         sensorNoise = [0.03, 0.03];      % noise of the sensor
         sigmaEKF = {};          % covariance of the state
         ID = 0;                 % identification of robot
@@ -20,9 +20,9 @@ classdef linearAngular < handle
             obj.estimatorEKF(:, 1) = initialGround;
             obj.estimatorDR(:, 1) = initialGround;
             obj.sigmaEKF{1} = initialSigma; %0.001*eye(3);
-            if (nargin == 6)
-                obj.controlParameter = varargin(1);
-                obj.sensorNoise = varargin(2);
+            if (nargin > 4)
+                obj.controlParameter = varargin{1};
+                obj.sensorNoise = varargin{2};
             end
         end
     end

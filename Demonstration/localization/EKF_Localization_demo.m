@@ -24,7 +24,7 @@ function [varargout] = EKF_Localization_demo(varargin)
         interval = 5; %sample interval
         
         % setting of the parameter of the robot
-        robot = linearAngular(1, [0, 0, 0], [0; 0], eye(3)); %robot model
+        robot = linearAngular(1, [0, 0, 0], [0; 0], eye(3), [0.3, 0.1, 0.1, 0.3], [0.03, 0.03]); %robot model
         alpha_noise = robot.controlParameter; %control noise parameter
         SigmaQ_eigenvalue = robot.sensorNoise; % Sensor noise
             
