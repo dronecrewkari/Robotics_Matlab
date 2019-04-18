@@ -5,8 +5,8 @@ classdef linearAngular < handle
         estimatorEKF = [];      % estimator of the state by EKF
         estimatorDR = [];       % estimator of the state by dead reckoning
         observation = {};       % observation from sensor
-        controlParameter = [0.3, 0.1, 0.1, 0.3];  % control noise parameter alpha
-        sensorNoise = [0.03, 0.03];      % noise of the sensor
+        controlParameter = [0.1, 0.05, 0.5, 0.1];  % control noise parameter alpha
+        sensorNoise = [0.02, 0.02];      % noise of the sensor
         sigmaEKF = {};          % covariance of the state
         ID = 0;                 % identification of robot
     end
