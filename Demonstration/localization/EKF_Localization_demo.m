@@ -13,6 +13,8 @@
 function [varargout] = EKF_Localization_demo(varargin)
     clear global; close all; clc;
     global delt iterator;
+    
+    %% initialise
     if nargin == 0
         disp('Extended Kalman Filter (EKF) localization demonstration start!!');
         % setup of the simulation
@@ -36,15 +38,25 @@ function [varargout] = EKF_Localization_demo(varargin)
         m = [1, 2.5, 1; 2.5, 3, 2; 3.4, 4, 3];  % object matrix 
         
     elseif nargin == 5 && nargout == 2
-
+        
+        robot = varargin{1};
+        
+        mut_1 = robot.groundTruth(:, 1);
+        ground_1 = robot.groundTruth(:, 1);
+        DR_1 = robot.groundTruth(:, 1);
+        Sigmat_1 = robot.sigmaEKF{1}; 
+        
+        alpha_noise = robot.controlParameter; %control noise parameter
+        SigmaQ_eigenvalue = robot.sensorNoise; % Sensor noise  
     end
         
-        % calculation and plot
+   %% calculation and plot
         tic;
         for i = 1 : iterator    
             plot(m(1, :), m(2, :), 'kh', 'MarkerSize', 7);
             time = time + i * delt; 
-            ut = calOdom(1, 5, time);    
+            ut = calOdom(1, 5, time); 
+            
             robot.odometry(:, i + 1) = ut;
             ground = calGround(ground_1, ut, alpha_noise, delt);
             zt = calObservation(ground, m, SigmaQ_eigenvalue);
