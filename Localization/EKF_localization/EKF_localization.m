@@ -1,6 +1,15 @@
 % function of ekf localization
-function [mut, sigmat] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, alpha_noise, SigmaQ, sampletime)
+%
+%   mut_1 ---------  previous state
+%   Sigmat_1 ------  previous variance
+%   ut ------------  linear velocity in odometry        
+%   zt ------------  observation which is the distance between robot and landmark
+%   m  ------------  position of landmark
+%   alpha_noise ---  noise in odometry
+%   SigmaQ --------  noise in observation
+%   sampletime ----  sample time
 
+function [mut, sigmat] = EKF_localization(mut_1, Sigmat_1, ut, zt, m, alpha_noise, SigmaQ, sampletime)
 
 theta = mut_1(3);
 vt = ut(1);
