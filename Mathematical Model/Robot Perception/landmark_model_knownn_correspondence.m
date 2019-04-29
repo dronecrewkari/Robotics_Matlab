@@ -1,35 +1,27 @@
-function [q]=landmark_model_knownn_correspondence(fi,ci,xt,m,parameters)
-%%
+function [q] = landmark_model_knownn_correspondence(fi, xt, m, parameters)
+%% initialise
+ri = fi(1);
+Phi = fi(2);
+si = fi(3);
 
+j = si;
 
-ri=fi.ri;
-Phi=fi.Phi;
-si=fi.si;
-
-x=xt.x;
-y=xt.y;
+x = xt(1);
+y = xt(2);
 %theta=xt.theta;
 
-m_x=m.m_x;
-m_y=m.m_y;
-s=m.s;
+m_x = m(1, j);
+m_y = m(2, j);
+s = m(3, j);
 
-sigma_r=parameters.sigma_r;
-sigma_Phi=parameters.sigma_Phi;
-sigma_s=parameters.sigma_s;
+sigma_r = parameters(1);
+sigma_Phi = parameters(2);
+sigma_s = parameters(3);
 %%
-j=ci;
-r_Lambda=sqrt((m_x(j)-x)^2+(m_y(j)-y)^2);
-Phi_Lambda=atan2(m_y(j)-y,m_x(j)-x);
-q=prob(ri-r_Lambda,sigma_r)*prob(Phi-Phi_Lambda,sigma_Phi)*prob(si-s(j),sigma_s);
 
+r_Lambda = sqrt( (m_x - x)^2 + (m_y - y)^2 );
+Phi_Lambda = atan2(m_y - y, m_x - x);
+q = prob_distribution(ri - r_Lambda, sigma_r) * prob_distribution(Phi - Phi_Lambda, sigma_Phi) * prob_distribution(si - s, sigma_s);
 
-%% prob_distribution(a b_2)
-function y=prob(a,b)   
-         y=(1/sqrt(2*pi*b))*exp(-1/2*a.^2/b);
-         %c=normpdf(a,0,b);
-         %pd=makedist('normal',0,b)
-         %y=pdf(pd,a)
-     end
 end
 
