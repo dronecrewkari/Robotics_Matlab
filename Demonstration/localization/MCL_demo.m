@@ -9,7 +9,7 @@ global delt iterator;
         start_time = 0;
         end_time = 60;
         time = 0;
-        delt = 0.1;   %sampletime
+        delt = 0.1;   %samletime
         iterator = ceil((end_time - start_time)/delt);
         interval = 5; %sample interval
         
