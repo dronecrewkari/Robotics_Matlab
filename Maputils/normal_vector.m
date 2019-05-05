@@ -1,6 +1,6 @@
 function vector_nor = normal_vector(vector)
     num = numel(vector);
-    sumVector = sum(array);
+    sumVector = sum(vector);
 
     if sumVector ~= 0
         vector_nor = vector/sumVector;

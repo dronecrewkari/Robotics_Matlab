@@ -17,12 +17,12 @@ alpha_6 = parameter(6);
 xt = zeros(3, 1);
 
 %% 
-v_Lamda = v + sample_distribution(alpha_1 * v^2 + alpha_2*w^2);
+v_Lamda = v + sample_distribution(alpha_1 * v^2 + alpha_2 * w^2);
 w_Lamda = w + sample_distribution(alpha_3 * v^2 + alpha_4 * w^2);
 gamma_Lamda = sample_distribution(alpha_5 * v^2 + alpha_6 * w^2);
 
-xn = x - v_Lamda/w_Lamda * sin(theta) + v_Lamda/w_Lamda * sin(theta+w_Lamda*Delta_t);
-yn = y + v_Lamda/w_Lamda * cos(theta) - v_Lamda/w_Lamda * cos(theta+w_Lamda*Delta_t);
+xn = x - v_Lamda/w_Lamda * sin(theta) + v_Lamda/w_Lamda * sin(theta + w_Lamda*Delta_t);
+yn = y + v_Lamda/w_Lamda * cos(theta) - v_Lamda/w_Lamda * cos(theta + w_Lamda*Delta_t);
 thetan = theta + w_Lamda * Delta_t + gamma_Lamda * Delta_t;
 
 xt(1) = xn;

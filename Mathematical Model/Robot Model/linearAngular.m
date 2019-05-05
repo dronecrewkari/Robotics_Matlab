@@ -4,6 +4,7 @@ classdef linearAngular < handle
         groundTruth = [];       % groundtruth of the robot
         estimatorEKF = [];      % estimator of the state by EKF
         estimatorDR = [];       % estimator of the state by dead reckoning
+        estimatorPF = [];       % estimator of the state by PF
         observation = {};       % observation from sensor
         controlParameter = [0.1, 0.05, 0.5, 0.1, 0, 0];  % control noise parameter alpha
         sensorNoise = [0.02, 0.02, 0];      % noise of the sensor

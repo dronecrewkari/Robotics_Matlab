@@ -11,10 +11,10 @@ if Neff < Nth
     pp = particle;
     for m = 1:numParticle
         U = r + (m - 1)/numParticle;
-        while ( U > wcum(m))
+        while ( U > wcum(ind))
             ind = ind + 1;
         end
-        particle(m) = pp(ind);
+        particle(:, m) = pp(:, ind);
         particleWeight(m) = 1/numParticle;
     end
 end

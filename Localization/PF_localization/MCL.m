@@ -36,6 +36,7 @@ end
 %resample
 [particleState, particleWeight] = resampling_low_variance(particleState_bar, particleWeight);
 
+particleState = particleState;
 
 
 

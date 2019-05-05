@@ -27,8 +27,8 @@ function [varargout] = EKF_Localization_demo(varargin)
         
         % setting of the parameter of the robot
         robot = linearAngular(1, [0, 0, 0], [0; 0], eye(3), [0.3, 0.1, 0.1, 0.3, 0, 0], [0.03, 0.03, 0]); %robot model
-        alpha_noise = robot.controlParameter(1:4); %control noise parameter
-        SigmaQ_eigenvalue = robot.sensorNoise(1:2); % Sensor noise
+        alpha_noise = robot.controlParameter; %control noise parameter
+        SigmaQ_eigenvalue = robot.sensorNoise; % Sensor noise
             
         mut_1 = robot.groundTruth(:, 1);
         ground_1 = robot.groundTruth(:, 1);
@@ -46,8 +46,8 @@ function [varargout] = EKF_Localization_demo(varargin)
         DR_1 = robot.groundTruth(:, 1);
         Sigmat_1 = robot.sigmaEKF{1}; 
         
-        alpha_noise = robot.controlParameter(1:4); %control noise parameter
-        SigmaQ_eigenvalue = robot.sensorNoise(1:2); % Sensor noise  
+        alpha_noise = robot.controlParameter; %control noise parameter
+        SigmaQ_eigenvalue = robot.sensorNoise; % Sensor noise  
     end
         
    %% calculation and plot
