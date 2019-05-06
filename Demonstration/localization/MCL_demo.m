@@ -1,6 +1,6 @@
 function [varargout] = MCL_demo(varargin)
 clear global; close all; clc;
-global delt iterator;
+global delt iterator wslow wfast;
     
     %% initialise
     if nargin == 0
@@ -13,21 +13,27 @@ global delt iterator;
         delt = 0.1;   %samletime
         iterator = ceil((end_time - start_time)/delt);
         interval = 5; %sample interval
+        wslow = 0;
+        wfast = 0;
         
         % setup of the parameter of the robot
-        robot = linearAngular(1, [0, 0, 0], [0; 0], eye(3), [0.03, 0.01, 0.01, 0.03, 0, 0], [0.03, 0.3, 0]); %robot model
+        robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3), [0.3, 0.1, 0.1, 0.3, 0, 0], [0.03, 0.03, 0]); %robot model
         alpha_noise = robot.controlParameter; %control noise parameter
         SigmaQ_eigenvalue = robot.sensorNoise; % Sensor noise
         numParticle = 200;
         
         
+        
         % setup of the initial state of the robot
-        pre_particle = zeros(3, numParticle) + robot.groundTruth(:, 1);
+        pre_particle = zeros(3, numParticle); %+ robot.groundTruth(:, 1);
         %pre_dead = zeros(3, numParticle) + robot.groundTruth(:, 1);
         ground_1 = robot.groundTruth(:, 1);
         DR_1 = robot.groundTruth(:, 1);
 
-        m = [10, 2.5, 1; 2.5, 3, 2; 3.4, 4, 3];  % object matrix 
+        m = [10, 2.5, 1; 
+             2.5, 3, 2; 
+             3.4, 4, 3; 
+             ];  % object matrix 
         
     elseif nargin == 5 && nargout == 2
         
@@ -46,7 +52,8 @@ global delt iterator;
             robot.estimatorDR(:, i + 1) = DeadReckoning(DR_1, ut, delt);
             robot.groundTruth(:, i + 1) = ground;
             
-            [particleState, particleWeight] = MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
+            %[particleState, particleWeight] = MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
+            [particleState, particleWeight] = Augmented_MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
             %[particleDead] = MCL_dead(pre_dead, ut, alpha_noise, delt);
             
             robot.estimatorPF(:, i + 1) = particleState * particleWeight';

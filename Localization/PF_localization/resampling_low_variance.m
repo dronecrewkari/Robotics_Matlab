@@ -1,5 +1,6 @@
 function [particle, particleWeight] = resampling_low_variance(particle, particleWeight)
 
+particleWeight = normal_vector(particleWeight);
 numParticle = numel(particleWeight);
 Neff = 1/(particleWeight * particleWeight'); % valid particle
 Nth = numParticle * 2/3;
