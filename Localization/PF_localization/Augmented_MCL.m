@@ -22,8 +22,8 @@ function [particleState, particleWeight] = Augmented_MCL(pre_particle, ut, zt, m
 
 % initialise the state
 global wslow wfast;
-alphaSlow = 0.3;
-alphaFast = 0.7;
+alphaSlow = 0.01;
+alphaFast = 0.9;
 numParticle = size(pre_particle, 2);
 particleState = zeros(3, numParticle);
 particleState_bar = particleState;
@@ -48,7 +48,7 @@ end
 particleWeight = normal_vector(particleWeight);
 particleState = particleState_bar;
 Neff = 1/(particleWeight * particleWeight'); % valid particle
-Nth = numParticle * 2/3;
+Nth = numParticle + 1;
 
 if Neff < Nth
     wcum = cumsum(particleWeight);
@@ -56,7 +56,7 @@ if Neff < Nth
     ind = 1;
     pp = particleState;
     for nump = 1:numParticle
-        if max(0, 1 - ratio)
+        if rand < max(0, 1 - ratio) % the probablity
             [a, b, c] = sample_landmark_known(zt, m, parameter_obser);
             if (rem(nump, 5) == 0)
                 particleState(:, nump) = [a, b, c]';
