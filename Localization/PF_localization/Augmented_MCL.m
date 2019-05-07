@@ -48,7 +48,7 @@ end
 particleWeight = normal_vector(particleWeight);
 particleState = particleState_bar;
 Neff = 1/(particleWeight * particleWeight'); % valid particle
-Nth = numParticle + 1;
+Nth = numParticle * 2/3;
 
 if Neff < Nth
     wcum = cumsum(particleWeight);

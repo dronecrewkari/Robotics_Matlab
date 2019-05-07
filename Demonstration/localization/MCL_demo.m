@@ -17,7 +17,7 @@ global delt iterator wslow wfast;
         wfast = 0;
         
         % setup of the parameter of the robot
-        robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3), [0.3, 0.1, 0.1, 0.3, 0, 0], [0.03, 0.03, 0]); %robot model
+        robot = linearAngular(1, [1, 1, 0], [0; 0], eye(3), [0.3, 0.1, 0.1, 0.3, 0, 0], [0.03, 0.03, 0]); %robot model
         alpha_noise = robot.controlParameter; %control noise parameter
         SigmaQ_eigenvalue = robot.sensorNoise; % Sensor noise
         numParticle = 200;
@@ -52,8 +52,8 @@ global delt iterator wslow wfast;
             robot.estimatorDR(:, i + 1) = DeadReckoning(DR_1, ut, delt);
             robot.groundTruth(:, i + 1) = ground;
             
-            %[particleState, particleWeight] = MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
-            [particleState, particleWeight] = Augmented_MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
+            [particleState, particleWeight] = MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
+            %[particleState, particleWeight] = Augmented_MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
             %[particleDead] = MCL_dead(pre_dead, ut, alpha_noise, delt);
             
             robot.estimatorPF(:, i + 1) = particleState * particleWeight';
