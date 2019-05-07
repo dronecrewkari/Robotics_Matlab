@@ -55,7 +55,9 @@ global delt iterator wslow wfast;
             %[particleState, particleWeight] = MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
             [particleState, particleWeight] = Augmented_MCL(pre_particle, ut, zt, m, alpha_noise, SigmaQ_eigenvalue, delt);
             %[particleDead] = MCL_dead(pre_dead, ut, alpha_noise, delt);
-            
+           % if i == 100
+            %    particleState = zeros(3, numParticle);
+            %end
             robot.estimatorPF(:, i + 1) = particleState * particleWeight';
             
             
