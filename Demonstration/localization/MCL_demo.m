@@ -13,8 +13,12 @@ global delt iterator wslow wfast;
         delt = 0.1;   %samletime
         iterator = ceil((end_time - start_time)/delt);
         interval = 5; %sample interval
+        % for augmented MCL
         wslow = 0;
         wfast = 0;
+        % for KLD sampling
+        
+        
         
         % setup of the parameter of the robot
         robot = linearAngular(1, [10, 10, 0], [0; 0], eye(3), [0.3, 0.1, 0.1, 0.3, 0, 0], [0.03, 0.03, 0]); %robot model
