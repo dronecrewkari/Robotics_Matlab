@@ -1,4 +1,4 @@
-bag = rosbag('D:/dataset/VO_UWB/2019-06-03-23-13-14.bag');
+bag = rosbag('D:/dataset/VO_UWB/2019-06-03-23-08-50.bag');
 groundtruth = select(bag,'Topic','/slave1/ground_pose');
 GroundStructs = readMessages(groundtruth,'DataFormat','struct');
 
@@ -8,7 +8,7 @@ uwbStructs = readMessages(uwb,'DataFormat','struct');
 vo = select(bag,'Topic','/vo_position');
 voStructs = readMessages(vo,'DataFormat','struct');
 
-figure(1)
+figure(1) 
 xPoints = cellfun(@(m) double(m.X), GroundStructs);
 yPoints = cellfun(@(m) double(m.Y), GroundStructs);
 
@@ -47,8 +47,8 @@ locate2 = find(yvo == 0);
 
 xvo(locate1) = [];
 yvo(locate2) = [];
-xvo = smoothdata(xvo);
-yvo = smoothdata(yvo);
+%xvo = smoothdata(xvo);
+%yvo = smoothdata(yvo);
 %xvoo = xvo(288:end);
 %xvooo = abs(xvoo - xvo(288)) +  xvo(288);
 %xvo(288:end) = xvooo;
